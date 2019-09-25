@@ -28,5 +28,13 @@ exports.seed = function(connection) {
         .insert(formatArticleData)
         .into('articles')
         .returning('*');
+    })
+    .then(articles => {
+      const refObj = makeRefObj(articles);
+      const formattedCommentData = formatComments(commentData, refObj);
+      return connection
+        .insert(formattedCommentData)
+        .into('comments')
+        .returning('*');
     });
 };
