@@ -1,9 +1,12 @@
 process.env.NODE_ENV = 'test';
 
+const chai = require('chai');
 const { expect } = require('chai');
+const chaiSorted = require('chai-sorted');
 const request = require('supertest');
 const app = require('../app');
 const connection = require('../db/connection');
+chai.use(chaiSorted);
 
 /* SEED */
 beforeEach(() => connection.seed.run());
@@ -200,66 +203,102 @@ describe('/api', () => {
         return Promise.all(methodPromises);
       });
     });
-    describe('POST', () => {
-      it('Status 201: Post comment by article ID returning posted comment', () => {
-        const postData = { username: 'icellusedkars', body: 'Nice article!' };
-        return request(app)
-          .post('/api/articles/3/comments')
-          .send(postData)
-          .expect(201)
-          .then(({ body: { addedComment } }) => {
-            expect(addedComment.body).to.equal('Nice article!');
-            expect(addedComment).to.contain.keys(
-              'comment_id',
-              'author',
-              'body',
-              'created_at',
-              'votes',
-              'article_id'
-            );
-          });
-      });
-      it('Status 404: Article not found', () => {
-        const postData = { username: 'icellusedkars', body: 'Nice article!' };
-        return request(app)
-          .post('/api/articles/300/comments')
-          .send(postData)
-          .expect(404)
-          .then(({ body: { msg } }) => {
-            expect(msg).to.equal('ERROR: Page not found!');
-          });
-      });
-      it('Status 400: Elements missing', () => {
-        const postData = { body: 'Nice article!' };
-        return request(app)
-          .post('/api/articles/3/comments')
-          .send(postData)
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).to.equal('ERROR: Missing elements!');
-          });
-      });
-      it('Status 400: Invalid elements', () => {
-        const postData = { username: '30', body: 'Nice article!' };
-        return request(app)
-          .post('/api/articles/3/comments')
-          .send(postData)
-          .expect(400)
-          .then(({ body: { msg } }) => {
-            expect(msg).to.equal('ERROR: Invalid elements!');
-          });
-      });
-      it('Status 405: Method not allowed', () => {
-        const invalidMethods = ['patch', 'put', 'delete'];
-        const methodPromises = invalidMethods.map(method => {
+    describe('/comments', () => {
+      describe('POST', () => {
+        it('Status 201: Post comment by article ID returning posted comment', () => {
+          const postData = { username: 'icellusedkars', body: 'Nice article!' };
           return request(app)
-            [method]('/api/articles/3/comments')
-            .expect(405)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal('ERROR: Method not allowed!');
+            .post('/api/articles/3/comments')
+            .send(postData)
+            .expect(201)
+            .then(({ body: { addedComment } }) => {
+              expect(addedComment.body).to.equal('Nice article!');
+              expect(addedComment).to.contain.keys(
+                'comment_id',
+                'author',
+                'body',
+                'created_at',
+                'votes',
+                'article_id'
+              );
             });
         });
-        return Promise.all(methodPromises);
+        it('Status 404: Article not found', () => {
+          const postData = { username: 'icellusedkars', body: 'Nice article!' };
+          return request(app)
+            .post('/api/articles/300/comments')
+            .send(postData)
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Page not found!');
+            });
+        });
+        it('Status 400: Elements missing', () => {
+          const postData = { body: 'Nice article!' };
+          return request(app)
+            .post('/api/articles/3/comments')
+            .send(postData)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Missing elements!');
+            });
+        });
+        it('Status 400: Invalid elements', () => {
+          const postData = { username: '30', body: 'Nice article!' };
+          return request(app)
+            .post('/api/articles/3/comments')
+            .send(postData)
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Invalid elements!');
+            });
+        });
+        it('Status 405: Method not allowed', () => {
+          const invalidMethods = ['patch', 'put', 'delete'];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]('/api/articles/3/comments')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('ERROR: Method not allowed!');
+              });
+          });
+          return Promise.all(methodPromises);
+        });
+      });
+      describe('GET', () => {
+        it('Status 200: Returns an array of comment objects from the given article', () => {
+          return request(app)
+            .get('/api/articles/1/comments')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body).to.be.an('array');
+              expect(body[0]).to.be.an('object');
+              expect(body[0]).to.contain.keys(
+                'comment_id',
+                'author',
+                'body',
+                'created_at',
+                'votes'
+              );
+            });
+        });
+        // it('Status 200: Returns an array of comment objects ', () => {
+        //   return request(app)
+        //     .get('/api/articles/1/comments')
+        //     .expect(200)
+        //     .then(({ body }) => {
+        //       expect(body).to.be.an('array');
+        //       expect(body[0]).to.be.an('object');
+        //       expect(body[0]).to.contain.keys(
+        //         'comment_id',
+        //         'author',
+        //         'body',
+        //         'created_at',
+        //         'votes'
+        //       );
+        //     });
+        // });
       });
     });
   });

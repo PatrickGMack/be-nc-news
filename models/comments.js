@@ -21,3 +21,11 @@ exports.postCommentByArticleId = commentObj => {
       .returning('*');
   }
 };
+
+exports.fetchCommentsByArticleId = article_id => {
+  console.log('Fetching comments by article ID...');
+  return connection
+    .select('*')
+    .from('comments')
+    .where({ article_id });
+};

@@ -3,7 +3,10 @@ const {
   sendArticleByArticleId,
   sendPatchedArticleByArticleId
 } = require('../controllers/articles');
-const { sendPostedCommentByArticleId } = require('../controllers/comments');
+const {
+  sendPostedCommentByArticleId,
+  sendCommentsByArticleId
+} = require('../controllers/comments');
 const { handle405s } = require('../errors/index');
 
 articlesRouter
@@ -14,6 +17,7 @@ articlesRouter
 
 articlesRouter
   .route('/:article_id/comments')
+  .get(sendCommentsByArticleId)
   .post(sendPostedCommentByArticleId)
   .all(handle405s);
 
