@@ -14,9 +14,10 @@ exports.sendPostedCommentByArticleId = (req, res, next) => {
 };
 
 exports.sendCommentsByArticleId = (req, res, next) => {
+  const orderBy = req.query.order;
+  const sort_by = req.query.sort_by;
   const articleId = req.params.article_id;
-  console.log(req.query);
-  fetchCommentsByArticleId(articleId)
+  fetchCommentsByArticleId(articleId, sort_by, orderBy)
     .then(commentsArr => {
       res.status(200).send(commentsArr);
     })

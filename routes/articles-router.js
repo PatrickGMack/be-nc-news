@@ -1,13 +1,16 @@
 const articlesRouter = require('express').Router();
 const {
   sendArticleByArticleId,
-  sendPatchedArticleByArticleId
+  sendPatchedArticleByArticleId,
+  sendAllArticles
 } = require('../controllers/articles');
 const {
   sendPostedCommentByArticleId,
   sendCommentsByArticleId
 } = require('../controllers/comments');
 const { handle405s } = require('../errors/index');
+
+articlesRouter.route('/').get(sendAllArticles);
 
 articlesRouter
   .route('/:article_id')

@@ -1,6 +1,7 @@
 const {
   fetchArticleByArticleId,
-  patchArticleByArticleId
+  patchArticleByArticleId,
+  fetchAllArticles
 } = require('../models/articles');
 
 exports.sendArticleByArticleId = (req, res, next) => {
@@ -34,4 +35,8 @@ exports.sendPatchedArticleByArticleId = (req, res, next) => {
       })
       .catch(next);
   }
+};
+
+exports.sendAllArticles = (req, res, next) => {
+  fetchAllArticles();
 };

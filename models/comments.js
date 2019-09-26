@@ -22,10 +22,22 @@ exports.postCommentByArticleId = commentObj => {
   }
 };
 
-exports.fetchCommentsByArticleId = article_id => {
+exports.fetchCommentsByArticleId = (
+  article_id,
+  sort_by = 'created_at',
+  order = 'desc'
+) => {
   console.log('Fetching comments by article ID...');
-  return connection
-    .select('*')
-    .from('comments')
-    .where({ article_id });
+  if (order != 'asc' && order != 'desc') {
+    return Promise.reject({
+      errorCode: 400,
+      msg: 'ERROR: Invalid order by!'
+    });
+  } else {
+    return connection
+      .select('*')
+      .from('comments')
+      .where({ article_id })
+      .orderBy(sort_by, order);
+  }
 };

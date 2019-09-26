@@ -2,6 +2,13 @@ exports.handle404s = (req, res, next) => {
   res.status(404).send({ msg: 'ERROR: Page not found!' });
 };
 
+exports.handlePsql400s = (err, req, res, next) => {
+  const errCodes = ['42703'];
+  if (errCodes.includes(err.code)) {
+    res.status(400).send({ msg: 'ERROR: Bad request!' });
+  } else next(err);
+};
+
 exports.handlePsql404s = (err, req, res, next) => {
   const errCodes = ['23503'];
   if (errCodes.includes(err.code)) {

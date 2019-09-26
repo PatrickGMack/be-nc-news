@@ -42,3 +42,5 @@ exports.patchArticleByArticleId = (article_id, votes) => {
       });
   }
 };
+
+exports.fetchAllArticles = () => {};

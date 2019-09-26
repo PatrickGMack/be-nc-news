@@ -267,13 +267,14 @@ describe('/api', () => {
         });
       });
       describe('GET', () => {
-        it('Status 200: Returns an array of comment objects from the given article', () => {
+        it('Status 200: Returns an array of comment objects from the given article - descending created at by default', () => {
           return request(app)
             .get('/api/articles/1/comments')
             .expect(200)
             .then(({ body }) => {
               expect(body).to.be.an('array');
               expect(body[0]).to.be.an('object');
+              expect(body).to.be.descendingBy('created_at');
               expect(body[0]).to.contain.keys(
                 'comment_id',
                 'author',
@@ -283,22 +284,73 @@ describe('/api', () => {
               );
             });
         });
-        // it('Status 200: Returns an array of comment objects ', () => {
-        //   return request(app)
-        //     .get('/api/articles/1/comments')
-        //     .expect(200)
-        //     .then(({ body }) => {
-        //       expect(body).to.be.an('array');
-        //       expect(body[0]).to.be.an('object');
-        //       expect(body[0]).to.contain.keys(
-        //         'comment_id',
-        //         'author',
-        //         'body',
-        //         'created_at',
-        //         'votes'
-        //       );
-        //     });
-        // });
+        it('Status 200: Returns an array of comment objects in ascending order when given a query of ascending', () => {
+          return request(app)
+            .get('/api/articles/1/comments/?order=asc')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body).to.be.an('array');
+              expect(body[0]).to.be.an('object');
+              expect(body).to.be.ascendingBy('created_at');
+              expect(body[0]).to.contain.keys(
+                'comment_id',
+                'author',
+                'body',
+                'created_at',
+                'votes'
+              );
+            });
+        });
+        it('Status 200: Returns an array of comment sorted in descending order by the given votes', () => {
+          return request(app)
+            .get('/api/articles/1/comments/?sort_by=votes')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body).to.be.an('array');
+              expect(body[0]).to.be.an('object');
+              expect(body).to.be.descendingBy('votes');
+              expect(body[0]).to.contain.keys(
+                'comment_id',
+                'author',
+                'body',
+                'created_at',
+                'votes'
+              );
+            });
+        });
+        it('Status 200: Returns an array of comment sorted in ascending order by the given votes', () => {
+          return request(app)
+            .get('/api/articles/1/comments/?order=asc&sort_by=votes')
+            .expect(200)
+            .then(({ body }) => {
+              expect(body).to.be.an('array');
+              expect(body[0]).to.be.an('object');
+              expect(body).to.be.ascendingBy('votes');
+              expect(body[0]).to.contain.keys(
+                'comment_id',
+                'author',
+                'body',
+                'created_at',
+                'votes'
+              );
+            });
+        });
+        it('Status 400: invalid order by request', () => {
+          return request(app)
+            .get('/api/articles/1/comments/?order=bad')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Invalid order by!');
+            });
+        });
+        it('Status 400: invalid sort by request', () => {
+          return request(app)
+            .get('/api/articles/1/comments/?sort_by=bad')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Bad request!');
+            });
+        });
       });
     });
   });
