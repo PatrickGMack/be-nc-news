@@ -1,4 +1,7 @@
-const { fetchArticleByArticleId } = require('../models/articles');
+const {
+  fetchArticleByArticleId,
+  patchArticleByArticleId
+} = require('../models/articles');
 
 exports.sendArticleByArticleId = (req, res, next) => {
   const artId = req.params.article_id;
@@ -11,6 +14,23 @@ exports.sendArticleByArticleId = (req, res, next) => {
     fetchArticleByArticleId(artId)
       .then(([article]) => {
         res.status(200).send({ article });
+      })
+      .catch(next);
+  }
+};
+
+exports.sendPatchedArticleByArticleId = (req, res, next) => {
+  const artId = req.params.article_id;
+  const votes = req.body.inc_votes;
+  if (Object.keys(req.body).length > 1) {
+    return next({
+      errorCode: 400,
+      msg: 'ERROR: Other properties not allowed!'
+    });
+  } else {
+    patchArticleByArticleId(artId, votes)
+      .then(([article]) => {
+        res.status(201).send({ article });
       })
       .catch(next);
   }

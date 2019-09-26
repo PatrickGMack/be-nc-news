@@ -99,5 +99,58 @@ describe('/api', () => {
           });
       });
     });
+    describe('PATCH', () => {
+      it('Status 201: Responds with updated article once votes have been added', () => {
+        const patchData = { inc_votes: 1 };
+        return request(app)
+          .patch('/api/articles/3')
+          .send(patchData)
+          .expect(201)
+          .then(({ body }) => {
+            expect(body.article).to.be.an('object');
+            expect(body.article).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'body',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+            expect(body.article.votes).to.equal(1);
+          });
+      });
+      it('Status 400: No vote object on request body', () => {
+        const patchData = { num: 1 };
+        return request(app)
+          .patch('/api/articles/3')
+          .send(patchData)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Invalid request!');
+          });
+      });
+      it('Status 400: Wrong data type - Invalid request', () => {
+        const patchData = { inc_votes: 'One' };
+        return request(app)
+          .patch('/api/articles/3')
+          .send(patchData)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Invalid request!');
+          });
+      });
+      it('Status 400: Bad request - Another property on body', () => {
+        const patchData = { inc_votes: 1, add_to_votes: true };
+        return request(app)
+          .patch('/api/articles/3')
+          .send(patchData)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Other properties not allowed!');
+          });
+      });
+    });
   });
 });
