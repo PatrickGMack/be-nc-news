@@ -16,12 +16,13 @@ exports.makeRefObj = list => {
 
 exports.formatComments = (comments, articleRef) => {
   const formattedComments = comments.map(obj => {
-    obj.author = obj.created_by;
-    obj.article_id = articleRef[obj.belongs_to];
-    obj.created_at = new Date(obj.created_at);
-    delete obj.belongs_to;
-    delete obj.created_by;
-    return obj;
+    const cloneObj = Object.assign({}, obj);
+    cloneObj.author = obj.created_by;
+    cloneObj.article_id = articleRef[obj.belongs_to];
+    cloneObj.created_at = new Date(obj.created_at);
+    delete cloneObj.belongs_to;
+    delete cloneObj.created_by;
+    return cloneObj;
   });
   return formattedComments;
 };

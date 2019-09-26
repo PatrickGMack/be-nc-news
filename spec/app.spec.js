@@ -31,6 +31,18 @@ describe('/api', () => {
             expect(body.topics[0]).to.contain.keys('description', 'slug');
           });
       });
+      it('Status 405: Method not allowed', () => {
+        const invalidMethods = ['patch', 'put', 'delete', 'post'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/topics')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Method not allowed!');
+            });
+        });
+        return Promise.all(methodPromises);
+      });
     });
   });
   describe('/users', () => {
@@ -59,6 +71,18 @@ describe('/api', () => {
           .then(({ body }) => {
             expect(body.msg).to.equal('ERROR: Invalid username!');
           });
+      });
+      it('Status 405: Method not allowed', () => {
+        const invalidMethods = ['patch', 'put', 'delete', 'post'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/users/icellusedkars')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Method not allowed!');
+            });
+        });
+        return Promise.all(methodPromises);
       });
     });
   });
@@ -97,6 +121,18 @@ describe('/api', () => {
           .then(({ body }) => {
             expect(body.msg).to.equal('ERROR: Invalid article ID!');
           });
+      });
+      it('Status 405: Method not allowed', () => {
+        const invalidMethods = ['put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/articles/3')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Method not allowed!');
+            });
+        });
+        return Promise.all(methodPromises);
       });
     });
     describe('PATCH', () => {
@@ -150,6 +186,80 @@ describe('/api', () => {
           .then(({ body }) => {
             expect(body.msg).to.equal('ERROR: Other properties not allowed!');
           });
+      });
+      it('Status 405: Method not allowed', () => {
+        const invalidMethods = ['post', 'put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/articles/3')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Method not allowed!');
+            });
+        });
+        return Promise.all(methodPromises);
+      });
+    });
+    describe('POST', () => {
+      it('Status 201: Post comment by article ID returning posted comment', () => {
+        const postData = { username: 'icellusedkars', body: 'Nice article!' };
+        return request(app)
+          .post('/api/articles/3/comments')
+          .send(postData)
+          .expect(201)
+          .then(({ body: { addedComment } }) => {
+            expect(addedComment.body).to.equal('Nice article!');
+            expect(addedComment).to.contain.keys(
+              'comment_id',
+              'author',
+              'body',
+              'created_at',
+              'votes',
+              'article_id'
+            );
+          });
+      });
+      it('Status 404: Article not found', () => {
+        const postData = { username: 'icellusedkars', body: 'Nice article!' };
+        return request(app)
+          .post('/api/articles/300/comments')
+          .send(postData)
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('ERROR: Page not found!');
+          });
+      });
+      it('Status 400: Elements missing', () => {
+        const postData = { body: 'Nice article!' };
+        return request(app)
+          .post('/api/articles/3/comments')
+          .send(postData)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('ERROR: Missing elements!');
+          });
+      });
+      it('Status 400: Invalid elements', () => {
+        const postData = { username: '30', body: 'Nice article!' };
+        return request(app)
+          .post('/api/articles/3/comments')
+          .send(postData)
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('ERROR: Invalid elements!');
+          });
+      });
+      it('Status 405: Method not allowed', () => {
+        const invalidMethods = ['patch', 'put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/articles/3/comments')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Method not allowed!');
+            });
+        });
+        return Promise.all(methodPromises);
       });
     });
   });

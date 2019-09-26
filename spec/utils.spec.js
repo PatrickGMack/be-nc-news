@@ -148,6 +148,7 @@ describe('#formatComments', () => {
       }
     ];
     const refObj = { 'Living in the shadow of a great man': 1 };
+    console.log(formatComments(testComments, refObj)[0]);
     expect(formatComments(testComments, refObj)[0].author).to.equal(
       'icellusedkars'
     );
