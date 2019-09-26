@@ -3,9 +3,11 @@ exports.handle404s = (req, res, next) => {
 };
 
 exports.handleCustomErr = (err, req, res, next) => {
-  const errorCode = err.errorCode;
-  const errorMessage = err.msg;
-  res.status(errorCode).send({ msg: errorMessage });
+  if (err.errorCode) {
+    const errorCode = err.errorCode;
+    const errorMessage = err.msg;
+    res.status(errorCode).send({ msg: errorMessage });
+  } else next(err);
 };
 
 exports.handle500s = (err, req, res, next) => {

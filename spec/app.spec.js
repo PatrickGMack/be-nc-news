@@ -34,7 +34,7 @@ describe('/api', () => {
     });
   });
   describe('/users', () => {
-    describe('/GET', () => {
+    describe('GET', () => {
       it('Status 200: Responds with an array containing an object of the selected user', () => {
         return request(app)
           .get('/api/users/icellusedkars')
@@ -58,6 +58,44 @@ describe('/api', () => {
           .expect(400)
           .then(({ body }) => {
             expect(body.msg).to.equal('ERROR: Invalid username!');
+          });
+      });
+    });
+  });
+  describe('/articles', () => {
+    describe('GET', () => {
+      it('Status 200: Returns an object containing an article with the correct properties', () => {
+        return request(app)
+          .get('/api/articles/3')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.article).to.be.an('object');
+            expect(body.article).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'body',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+          });
+      });
+      it('Status 404: Article not found', () => {
+        return request(app)
+          .get('/api/articles/300')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Article not found!');
+          });
+      });
+      it('Status 400: Invalid article ID', () => {
+        return request(app)
+          .get('/api/articles/thirty')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Invalid article ID!');
           });
       });
     });

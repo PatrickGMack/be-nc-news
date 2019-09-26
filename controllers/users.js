@@ -10,7 +10,6 @@ exports.sendUsersByUsername = (req, res, next) => {
   } else {
     fetchUsersByUsername(username)
       .then(([user]) => {
-        console.log(user);
         res.status(200).send({ user });
       })
       .catch(next);
