@@ -41,3 +41,5 @@ exports.fetchCommentsByArticleId = (
       .orderBy(sort_by, order);
   }
 };
+
+exports.patchCommentByCommentId = () => {};

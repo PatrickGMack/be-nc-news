@@ -91,6 +91,153 @@ describe('/api', () => {
   });
   describe('/articles', () => {
     describe('GET', () => {
+      it('Status 200: Returns an array of article objects ordered by default to dates', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an('array');
+            expect(articles[0]).to.be.an('object');
+            expect(articles).to.descendingBy('created_at');
+            expect(articles[0]).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+          });
+      });
+      it('Status 200: Returns an array of article objects ordered by ascending when requested', () => {
+        return request(app)
+          .get('/api/articles/?order=asc')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an('array');
+            expect(articles[0]).to.be.an('object');
+            expect(articles).to.ascendingBy('created_at');
+            expect(articles[0]).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+          });
+      });
+      it('Status 200: Returns an array of article objects sorted by comment count when requested', () => {
+        return request(app)
+          .get('/api/articles/?sort_by=comment_count')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an('array');
+            expect(articles[0]).to.be.an('object');
+            expect(articles).to.descendingBy('comment_count');
+            expect(articles[0]).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+          });
+      });
+      it('Status 400: invalid order by request', () => {
+        return request(app)
+          .get('/api/articles/?order=bad')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('ERROR: Invalid order by!');
+          });
+      });
+      it('Status 400: invalid sort by request', () => {
+        return request(app)
+          .get('/api/articles/?sort_by=bad')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('ERROR: Bad request!');
+          });
+      });
+
+      it('Status 200: Returns an array of article objects of the selected author', () => {
+        return request(app)
+          .get('/api/articles/?author=rogersop')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an('array');
+            expect(articles[0]).to.be.an('object');
+            expect(articles).to.descendingBy('created_at');
+            expect(articles.length).to.equal(3);
+            expect(articles[0]).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+          });
+      });
+
+      it('Status 200: Returns an array of article objects of the selected topic', () => {
+        return request(app)
+          .get('/api/articles/?topic=paper')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.an('array');
+            expect(articles[0]).to.be.an('object');
+            expect(articles).to.descendingBy('created_at');
+            expect(articles.length).to.equal(12);
+            expect(articles[0]).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+          });
+      });
+
+      it('Status 404: Responds with "ERROR: Page not found!" When given typo', () => {
+        return request(app)
+          .get('/api/artiles')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Page not found!');
+          });
+      });
+
+      it('Status 400: invalid author request', () => {
+        return request(app)
+          .get('/api/articles/?author=bad')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('ERROR: No such author!');
+          });
+      });
+
+      it('Status 405: Method not allowed', () => {
+        const invalidMethods = ['put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/articles/')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Method not allowed!');
+            });
+        });
+        return Promise.all(methodPromises);
+      });
+
       it('Status 200: Returns an object containing an article with the correct properties', () => {
         return request(app)
           .get('/api/articles/3')
@@ -154,8 +301,7 @@ describe('/api', () => {
               'body',
               'topic',
               'created_at',
-              'votes',
-              'comment_count'
+              'votes'
             );
             expect(body.article.votes).to.equal(1);
           });

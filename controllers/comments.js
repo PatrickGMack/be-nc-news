@@ -1,6 +1,7 @@
 const {
   postCommentByArticleId,
-  fetchCommentsByArticleId
+  fetchCommentsByArticleId,
+  patchCommentByCommentId
 } = require('../models/comments');
 
 exports.sendPostedCommentByArticleId = (req, res, next) => {
@@ -23,3 +24,5 @@ exports.sendCommentsByArticleId = (req, res, next) => {
     })
     .catch(next);
 };
+
+exports.sendPatchedCommentByCommentId = () => {};

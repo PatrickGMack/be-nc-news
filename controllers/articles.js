@@ -38,5 +38,12 @@ exports.sendPatchedArticleByArticleId = (req, res, next) => {
 };
 
 exports.sendAllArticles = (req, res, next) => {
-  fetchAllArticles();
+  const orderBy = req.query.order;
+  const sort_by = req.query.sort_by;
+  const author = req.query.author;
+  fetchAllArticles(orderBy, sort_by, author)
+    .then(articles => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
 };

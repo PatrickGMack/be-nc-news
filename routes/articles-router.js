@@ -10,7 +10,10 @@ const {
 } = require('../controllers/comments');
 const { handle405s } = require('../errors/index');
 
-articlesRouter.route('/').get(sendAllArticles);
+articlesRouter
+  .route('/')
+  .get(sendAllArticles)
+  .all(handle405s);
 
 articlesRouter
   .route('/:article_id')
