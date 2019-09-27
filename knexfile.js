@@ -1,5 +1,5 @@
 const ENV = process.env.NODE_ENV || 'development';
-const { DB_URL } = process.env;
+const { DATABASE_URL } = process.env;
 
 const baseConfig = {
   client: 'pg',
@@ -27,8 +27,7 @@ const customConfig = {
     }
   },
   production: {
-    connection: `${DB_URL}?ssl=true`
+    connection: `${DATABASE_URL}?ssl=true`
   }
 };
-console.log(customConfig[ENV]);
 module.exports = { ...customConfig[ENV], ...baseConfig };
