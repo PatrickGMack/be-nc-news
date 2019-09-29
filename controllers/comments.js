@@ -25,4 +25,19 @@ exports.sendCommentsByArticleId = (req, res, next) => {
     .catch(next);
 };
 
-exports.sendPatchedCommentByCommentId = () => {};
+exports.sendPatchedCommentByCommentId = (req, res, next) => {
+  const commentId = req.params.comment_id;
+  const votes = req.body.inc_votes;
+  if (Object.keys(req.body).length > 1) {
+    return next({
+      errorCode: 400,
+      msg: 'ERROR: Other properties not allowed!'
+    });
+  } else {
+    patchCommentByCommentId(commentId, votes)
+      .then(([comment]) => {
+        res.status(200).send({ comment });
+      })
+      .catch(next);
+  }
+};

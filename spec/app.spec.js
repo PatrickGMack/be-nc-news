@@ -500,4 +500,69 @@ describe('/api', () => {
       });
     });
   });
+  describe('/comments', () => {
+    describe('PATCH', () => {
+      it('Status 200: Responds with updated comment once votes have been added', () => {
+        const patchData = { inc_votes: 1 };
+        return request(app)
+          .patch('/api/comments/5')
+          .send(patchData)
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.comment).to.be.an('object');
+            expect(body.comment).to.contain.keys(
+              'author',
+              'comment_id',
+              'article_id',
+              'body',
+              'created_at',
+              'votes'
+            );
+            expect(body.comment.votes).to.equal(1);
+          });
+      });
+      it('Status 400: No vote object on request body', () => {
+        const patchData = { num: 1 };
+        return request(app)
+          .patch('/api/comments/1')
+          .send(patchData)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Invalid request!');
+          });
+      });
+      it('Status 400: Wrong data type - Invalid request', () => {
+        const patchData = { inc_votes: 'One' };
+        return request(app)
+          .patch('/api/comments/1')
+          .send(patchData)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Invalid request!');
+          });
+      });
+      it('Status 400: Bad request - Another property on body', () => {
+        const patchData = { inc_votes: 1, add_to_votes: true };
+        return request(app)
+          .patch('/api/comments/1')
+          .send(patchData)
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal('ERROR: Other properties not allowed!');
+          });
+      });
+      it('Status 405: Method not allowed', () => {
+        const invalidMethods = ['post', 'put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/articles/3')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('ERROR: Method not allowed!');
+            });
+        });
+        return Promise.all(methodPromises);
+      });
+    });
+  });
 });

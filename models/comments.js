@@ -42,4 +42,19 @@ exports.fetchCommentsByArticleId = (
   }
 };
 
-exports.patchCommentByCommentId = () => {};
+exports.patchCommentByCommentId = (comment_id, votes) => {
+  console.log('Patching comment by comment ID...');
+  if (!votes || !/\d/.test(votes)) {
+    return Promise.reject({
+      errorCode: 400,
+      msg: 'ERROR: Invalid request!'
+    });
+  } else {
+    return connection('comments')
+      .increment('votes', votes)
+      .leftJoin('articles', 'articles.comment_id', 'comments.comment_id')
+      .groupBy('comments.comment_id')
+      .where('comments.comment_id', '=', comment_id)
+      .returning('*');
+  }
+};
