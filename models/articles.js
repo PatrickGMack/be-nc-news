@@ -1,7 +1,6 @@
 const connection = require('../db/connection');
 
 exports.fetchArticleByArticleId = article_id => {
-  console.log('Fetching articles by ID...');
   return connection
     .select('articles.*')
     .count({ comment_count: 'comment_id' })
@@ -22,7 +21,6 @@ exports.fetchArticleByArticleId = article_id => {
 };
 
 exports.patchArticleByArticleId = (article_id, votes) => {
-  console.log('Patching article by article ID...');
   if (!votes || !/\d/.test(votes)) {
     return Promise.reject({
       errorCode: 400,
@@ -45,7 +43,6 @@ exports.fetchAllArticles = (
   author,
   topic
 ) => {
-  console.log('Fetching all articles...');
   if (order != 'asc' && order != 'desc') {
     return Promise.reject({
       errorCode: 400,

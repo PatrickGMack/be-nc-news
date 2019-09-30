@@ -564,5 +564,12 @@ describe('/api', () => {
         return Promise.all(methodPromises);
       });
     });
+    describe('DELETE', () => {
+      it('Status 204: Chosen comment deleted', () => {
+        return request(app)
+          .delete('/api/comments/5')
+          .expect(204);
+      });
+    });
   });
 });

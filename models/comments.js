@@ -1,7 +1,6 @@
 const connection = require('../db/connection');
 
 exports.postCommentByArticleId = commentObj => {
-  console.log('Posting comment by article ID...');
   commentObj.author = commentObj.username;
   if (!commentObj.author || !commentObj.body) {
     return Promise.reject({
@@ -27,7 +26,6 @@ exports.fetchCommentsByArticleId = (
   sort_by = 'created_at',
   order = 'desc'
 ) => {
-  console.log('Fetching comments by article ID...');
   if (order != 'asc' && order != 'desc') {
     return Promise.reject({
       errorCode: 400,
@@ -43,7 +41,6 @@ exports.fetchCommentsByArticleId = (
 };
 
 exports.patchCommentByCommentId = (comment_id, votes) => {
-  console.log('Patching comment by comment ID...');
   if (!votes || !/\d/.test(votes)) {
     return Promise.reject({
       errorCode: 400,
@@ -57,4 +54,10 @@ exports.patchCommentByCommentId = (comment_id, votes) => {
       .where('comments.comment_id', '=', comment_id)
       .returning('*');
   }
+};
+
+exports.removeCommentByCommentId = commentId => {
+  return connection('comments')
+    .where('comment_id', '=', commentId)
+    .del();
 };

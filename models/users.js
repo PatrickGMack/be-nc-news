@@ -1,7 +1,6 @@
 const connection = require('../db/connection');
 
 exports.fetchUsersByUsername = username => {
-  console.log('Fetching users by username...');
   return connection
     .select('*')
     .where({ username })
