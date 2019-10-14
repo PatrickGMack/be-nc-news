@@ -286,12 +286,12 @@ describe('/api', () => {
       });
     });
     describe('PATCH', () => {
-      it('Status 201: Responds with updated article once votes have been added', () => {
+      it('Status 200: Responds with updated article once votes have been added', () => {
         const patchData = { inc_votes: 1 };
         return request(app)
           .patch('/api/articles/3')
           .send(patchData)
-          .expect(201)
+          .expect(200)
           .then(({ body }) => {
             expect(body.article).to.be.an('object');
             expect(body.article).to.contain.keys(

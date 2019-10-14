@@ -31,7 +31,7 @@ exports.sendPatchedArticleByArticleId = (req, res, next) => {
   } else {
     patchArticleByArticleId(artId, votes)
       .then(([article]) => {
-        res.status(201).send({ article });
+        res.status(200).send({ article });
       })
       .catch(next);
   }
