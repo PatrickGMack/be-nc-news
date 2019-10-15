@@ -43,6 +43,7 @@ exports.fetchAllArticles = (
   author,
   topic
 ) => {
+  console.log(topic, 'TOPIC');
   if (order != 'asc' && order != 'desc') {
     return Promise.reject({
       errorCode: 400,
