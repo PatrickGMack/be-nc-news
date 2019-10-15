@@ -41,7 +41,8 @@ exports.sendAllArticles = (req, res, next) => {
   const orderBy = req.query.order;
   const sort_by = req.query.sort_by;
   const author = req.query.author;
-  fetchAllArticles(orderBy, sort_by, author)
+  const topic = req.query.topic;
+  fetchAllArticles(orderBy, sort_by, author, topic)
     .then(articles => {
       res.status(200).send({ articles });
     })
