@@ -7,7 +7,7 @@ exports.postCommentByArticleId = commentObj => {
       errorCode: 400,
       msg: 'ERROR: Missing elements!'
     });
-  } else if (/\d/g.test(commentObj.author)) {
+  } else if (/^\d+$/g.test(commentObj.author)) {
     return Promise.reject({
       errorCode: 400,
       msg: 'ERROR: Invalid elements!'

@@ -350,7 +350,7 @@ describe('/api', () => {
       });
     });
     describe('/comments', () => {
-      describe('POST', () => {
+      describe.only('POST', () => {
         it('Status 201: Post comment by article ID returning posted comment', () => {
           const postData = { username: 'icellusedkars', body: 'Nice article!' };
           return request(app)
@@ -370,7 +370,10 @@ describe('/api', () => {
             });
         });
         it('Status 404: Article not found', () => {
-          const postData = { username: 'icellusedkars', body: 'Nice article!' };
+          const postData = {
+            username: 'icellusedkars',
+            body: 'Nice article!'
+          };
           return request(app)
             .post('/api/articles/300/comments')
             .send(postData)
