@@ -188,13 +188,13 @@ describe('/api', () => {
 
       it('Status 200: Returns an array of article objects of the selected topic', () => {
         return request(app)
-          .get('/api/articles/?topic=paper')
+          .get('/api/articles/?topic=mitch')
           .expect(200)
           .then(({ body: { articles } }) => {
             expect(articles).to.be.an('array');
             expect(articles[0]).to.be.an('object');
             expect(articles).to.descendingBy('created_at');
-            expect(articles.length).to.equal(12);
+            expect(articles.length).to.equal(11);
             expect(articles[0]).to.contain.keys(
               'author',
               'title',
@@ -350,7 +350,7 @@ describe('/api', () => {
       });
     });
     describe('/comments', () => {
-      describe.only('POST', () => {
+      describe('POST', () => {
         it('Status 201: Post comment by article ID returning posted comment', () => {
           const postData = { username: 'icellusedkars', body: 'Nice article!' };
           return request(app)
